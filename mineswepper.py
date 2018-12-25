@@ -13,7 +13,7 @@ class Cell(object):
         self.x = x;
         self.y = y
         self.mine = False
-        self.value = 0
+        self.value = -1
         self.window = tk
         self.text = StringVar()
         self.text.set("")
@@ -52,12 +52,16 @@ class Cell(object):
 
 def get_value(x, y):
     global btn
-    value = 0
-    for dx in range(x - 1, x + 2):
-        for dy in range(y - 1, y + 2):
-            if 0 <= dx < rows and 0 <= dy < columns and btn[dx][dy].mine:
-                value += 1
-    return value
+    if btn[x][y].value == -1:
+        value = 0
+        for dx in range(x - 1, x + 2):
+            for dy in range(y - 1, y + 2):
+                if 0 <= dx < rows and 0 <= dy < columns and btn[dx][dy].mine:
+                    value += 1
+        btn[x][y].value = value
+        return value
+    else:
+        return btn[x][y].value
 
 
 def start(settings, bombs_str, rows_str, columns_str):
