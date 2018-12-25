@@ -34,6 +34,7 @@ class Cell(object):
             self.text.set(btn_text[self.state])
 
     def reveal(self):
+        self.state = 1
         self.value = get_value(self.x, self.y)
         if self.mine:
             gameover(self.window)
