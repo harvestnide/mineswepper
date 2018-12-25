@@ -25,14 +25,9 @@ class Cell(object):
     def get_button(self):
         return self.button
 
-    def get_state(self):
-        return self.state
-
     def set_state(self, event, state):
         btn_text = ["", "F", "?"]
         if state == 1:
-            if self.mine:
-                gameover(self.window)
             self.reveal()
         elif state == 2:
             self.state = (self.state + 1) % 3
@@ -40,6 +35,8 @@ class Cell(object):
 
     def reveal(self):
         self.value = get_value(self.x, self.y)
+        if self.mine:
+            gameover(self.window)
         if self.value == 0:
             for dx in range(self.x - 1, self.x + 2):
                 for dy in range(self.y - 1, self.y + 2):
@@ -59,13 +56,17 @@ def get_value(x, y):
     return value
 
 
-def start(settings):
-    global bombs, rows, columns
-    # if settings.mineText.get('1.0', END) == '\n':
-    #     bombs = 10
-    # else:
-    #     bombs = int(settings.mineText.get('1.0', END))
-    # settings.destroy()
+def start(settings, bombs_str, rows_str, columns_str):
+    if bombs_str != "\n":
+        global bombs
+        bombs = int(bombs_str)
+    if rows_str != "\n":
+        global rows
+        rows = int(rows_str)
+    if columns_str != "\n":
+        global columns
+        columns = int(columns_str)
+    settings.destroy()
     root = Tk()
     root.title('Сапер')
     frame = Frame(root)
@@ -103,20 +104,22 @@ def main():
     settings = Tk()
     settings.title('Настройки')
     settings.geometry('200x150')
-    mineText = Text(settings, width=5, height=1)
-    mineLabe = Label(settings, height=1, text='Бомбы:')
-    highText = Text(settings, width=5, height=1)
-    highLabe = Label(settings, height=1, text='Ширина:')
-    lenghtText = Text(settings, width=5, height=1)
-    lenghtLabe = Label(settings, height=1, text='Высота:')
-    mineBut = Button(settings, text='Начать:', fg='#ffffff', command=lambda settings=settings: start(settings))
-    mineBut.place(x=70, y=90)
-    mineText.place(x=75, y=5)
-    mineLabe.place(x=5, y=5)
-    highText.place(x=75, y=30)
-    highLabe.place(x=5, y=30)
-    lenghtText.place(x=75, y=55)
-    lenghtLabe.place(x=5, y=55)
+    mine = Text(settings, width=5, height=1)
+    mine_lab = Label(settings, height=1, text='Бомбы:')
+    rows = Text(settings, width=5, height=1)
+    rows_lab = Label(settings, height=1, text='Ширина:')
+    columns = Text(settings, width=5, height=1)
+    columns_lab = Label(settings, height=1, text='Высота:')
+    but = Button(settings, text='Начать:', fg='#ffffff',
+                 command=lambda settings=settings, bombs=mine.get('1.0', END), rows=rows.get('1.0', END),
+                                columns=columns.get('1.0', END): start(settings, bombs, rows, columns))
+    but.place(x=70, y=90)
+    mine.place(x=75, y=5)
+    mine_lab.place(x=5, y=5)
+    rows.place(x=75, y=30)
+    rows_lab.place(x=5, y=30)
+    columns.place(x=75, y=55)
+    columns_lab.place(x=5, y=55)
     settings.mainloop()
 
 
