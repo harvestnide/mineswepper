@@ -19,7 +19,6 @@ class Cell(object):
         self.text = StringVar()
         self.text.set("")
         self.button = Button(tk, textvariable=self.text, bg='white', fg='red', padx="10", pady="7")
-        if self.mine: self.text.set("M")
         self.state = 0  # 0 - закрыта, 1 - открыта, 2 - флаг, 3 - ?
         self.button.bind('<Button-1>', lambda event, state=1: self.set_state(event, state))
         self.button.bind('<Button-3>', lambda event, state=2: self.set_state(event, state))
@@ -39,7 +38,7 @@ class Cell(object):
         self.state = 1
         self.value = get_value(self.x, self.y)
         if self.mine:
-            gameover(self.window)
+            self.text.set("M")
         self.button.config(highlightthickness=0, bg=None)
         if self.value == 0:
             for dx in range(self.x - 1, self.x + 2):
