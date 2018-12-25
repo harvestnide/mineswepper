@@ -38,7 +38,7 @@ class Cell(object):
         if self.mine:
             for x in range(rows):
                 for y in range(columns):
-                    if btn[x][y].mine:
+                    if btn[x][y].mine and not (x == self.x and y == self.y):
                         btn[x][y].reveal()
             gameover(self.window)
         if self.value == 0:
