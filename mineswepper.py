@@ -1,6 +1,7 @@
 from tkinter import *
 import random
-from datetime import datetime
+
+# from datetime import datetime
 
 rows = 10
 columns = 10
@@ -43,8 +44,8 @@ class Cell(object):
             for dx in range(self.x - 1, self.x + 2):
                 for dy in range(self.y - 1, self.y + 2):
                     if 0 <= dx < rows and 0 <= dy < columns and not (dx == self.x and dy == self.y):
-                        if btn[dx][dy].state == 0:
-                            btn[dx][dy].reveal()
+                        if btn[dy][dx].state == 0:
+                            btn[dy][dx].reveal()
         else:
             self.text.set(str(self.value))
 
