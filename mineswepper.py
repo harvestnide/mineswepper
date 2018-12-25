@@ -25,14 +25,9 @@ class Cell(object):
     def get_button(self):
         return self.button
 
-    def get_state(self):
-        return self.state
-
     def set_state(self, event, state):
         btn_text = ["", "F", "?"]
         if state == 1:
-            if self.mine:
-                gameover(self.window)
             self.reveal()
         elif state == 2:
             self.state = (self.state + 1) % 3
@@ -40,6 +35,8 @@ class Cell(object):
 
     def reveal(self):
         self.value = get_value(self.x, self.y)
+        if self.mine:
+            gameover(self.window)
         if self.value == 0:
             for dx in range(self.x - 1, self.x + 2):
                 for dy in range(self.y - 1, self.y + 2):
