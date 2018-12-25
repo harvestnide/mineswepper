@@ -36,10 +36,6 @@ class Cell(object):
     def reveal(self):
         self.value = get_value(self.x, self.y)
         if self.mine:
-            for x in range(rows):
-                for y in range(columns):
-                    if btn[x][y].mine and not (x == self.x and y == self.y):
-                        btn[x][y].reveal()
             gameover(self.window)
         if self.value == 0:
             for dx in range(self.x - 1, self.x + 2):
