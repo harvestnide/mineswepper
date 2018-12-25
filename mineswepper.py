@@ -1,124 +1,86 @@
 from tkinter import *
 import random
 
-# from datetime import datetime
-
-rows = 10
-columns = 10
-bombs = 25
+rows = 6
+columns = 6
+bombs = 9
 btn = []
 
 
 class Cell(object):
     def __init__(self, tk, x, y):
         self.x = x
-        self.y = y
-        self.mine = False
-        self.value = 0
-        self.window = tk
-        self.text = StringVar()
+        self.y = y  # координаты в таблице
+        self.mine = False  # является ли миной
+        self.value = 0  # количество мин среди "соседей"
+        self.window = tk  # окно с игрой
+        self.text = StringVar()  # текст на кнопке
         self.text.set("")
-        self.button = Button(tk, textvariable=self.text, bg='white', fg='red', padx="10", pady="7")
-        self.state = 0  # 0 - закрыта, 1 - открыта, 2 - флаг, 3 - ?
-        self.button.bind('<Button-1>', lambda event, state=1: self.set_state(event, state))
-        self.button.bind('<Button-3>', lambda event, state=2: self.set_state(event, state))
+        self.button = Button(tk, textvariable=self.text, bg='white', fg='red', padx="10",
+                             pady="7")  # кнопка. Передаем окно игры, текст, цвет фона и отступы
+        self.state = 0  # 0 - закрыта, 1 - флаг, 2 - ?
+        self.button.bind('<Button-1>', lambda event, state=0: self.set_state(state))  # нажатие ЛКМ
+        self.button.bind('<Button-3>', lambda event, state=1: self.set_state(state))  # нажатие ПКМ
 
-    def get_button(self):
-        return self.button
-
-    def set_state(self, event, state):
-        btn_text = ["", "F", "?"]
-        if state == 1:
-            self.reveal()
-        elif state == 2:
-            self.state = (self.state + 1) % 3
-            self.text.set(btn_text[self.state])
+    def set_state(self, state):
+        btn_text = ["", "F", "?"]  # спец. символы
+        if state == 0 and self.state == 0:  # не откроется, если флаг или вопросик
+            self.reveal()  # открытие клетки
+        elif state == 1:
+            self.state = self.state + 1
+            self.text.set(btn_text[self.state % 3])  # текст на кнопке, переключается ПКМ
 
     def reveal(self):
-        self.state = 1
         if self.mine:
-            self.text.set("M")
-            return
+            gameover(self.window)  # взрыв
         if self.value == 0:
             for dx in range(self.x - 1, self.x + 2):
                 for dy in range(self.y - 1, self.y + 2):
                     if 0 <= dx < rows and 0 <= dy < columns and not (dx == self.x and dy == self.y):
-                        if btn[dy][dx].state == 0:
+                        if btn[dy][dx].state == 0:  # рекурсивно открываем соседние клетки, пока вокруг нет мин
                             btn[dy][dx].reveal()
         else:
-            self.text.set(str(self.value))
+            self.text.set(str(self.value))  # выводим значение с количеством мин вокруг
 
 
-def start(settings, bombs_str, rows_str, columns_str):
-    if bombs_str != "\n":
-        global bombs
-        bombs = int(bombs_str)
-    if rows_str != "\n":
-        global rows
-        rows = int(rows_str)
-    if columns_str != "\n":
-        global columns
-        columns = int(columns_str)
-    settings.destroy()
-    root = Tk()
+def start():
+    root = Tk()  # создаем новое окно
     root.title('Сапер')
     frame = Frame(root)
-    frame.grid(row=0, column=0)
+    frame.grid(row=0, column=0)  # создаем таблицу для кнопок
     global btn
-    btn = [[Cell(root, x, y) for x in range(rows)] for y in range(columns)]
+    btn = [[Cell(root, x, y) for x in range(rows)] for y in range(columns)]  # массив ячеек таблицы
     for x in range(rows):
         for y in range(columns):
-            btn[x][y].get_button().grid(column=x, row=y)
-    root.resizable(False, False)
+            btn[x][y].button.grid(column=x, row=y)  # расставляем кнопки по таблице
+    root.resizable(False, False)  # запрещаем изменение размеров окна с игрой
     for i in range(bombs):
         x = random.randint(0, rows - 1)
-        y = random.randint(0, columns - 1)
+        y = random.randint(0, columns - 1)  # генерация координат бомб
         if btn[x][y].mine:
-            i -= 1
+            i -= 1  # если координаты двух бомб совпали, ставим еще одну
         else:
             btn[x][y].mine = True
-            for dx in range(dx - 1, dx + 2):
+            for dx in range(x - 1, x + 2):
                 if -1 < dx < rows:
-                    for dy in range(dy - 1, dy + 2):
+                    for dy in range(y - 1, y + 2):
                         if -1 < dy < columns:
-                            btn[dx][dy].value += 1
+                            btn[dx][dy].value += 1  # добавляем 1 к счетчику бомб среди соседей клетки
     root.mainloop()
 
 
 def gameover(tk):
-    tk.destroy()
-    gg = Tk()
-    print('gg')
+    tk.destroy()  # закрываем окно с игрой
+    gg = Tk()  # создаем новое окно
     gg.title('GG')
-    gg.geometry('210x150')
+    gg.geometry('210x150')  # задаем название окна и размер
     Label(gg, text='Вы проиграли.').place(x=5, y=30)
     Label(gg, text='В следующий раз повезет больше!').place(x=5, y=47)
-    Button(gg, text='Перезапустить', command=lambda: [f() for f in [gg.destroy, main]]).place(x=60, y=75)
-    Button(gg, text='Выход', fg='#000000', command=lambda: exit(0)).place(x=80, y=105)
+    Button(gg, text='Перезапустить', command=lambda: [f() for f in [gg.destroy, start]]).place(x=60,
+                                                                                               y=75)  # кнопка вызывает метод start, перезапуская игру и уничтожает это окно
+    Button(gg, text='Выход', fg='#000000', command=lambda: exit()).place(x=80,
+                                                                         y=105)  # выходит из программы, все окна закрываются автоматически
     gg.mainloop()
 
 
-def main():
-    settings = Tk()
-    settings.title('Настройки')
-    settings.geometry('200x150')
-    mine = Text(settings, width=5, height=1)
-    mine_lab = Label(settings, height=1, text='Бомбы:')
-    rows = Text(settings, width=5, height=1)
-    rows_lab = Label(settings, height=1, text='Ширина:')
-    columns = Text(settings, width=5, height=1)
-    columns_lab = Label(settings, height=1, text='Высота:')
-    but = Button(settings, text='Начать:', fg='#ffffff',
-                 command=lambda settings=settings, bombs=mine.get('1.0', END), rows=rows.get('1.0', END),
-                                columns=columns.get('1.0', END): start(settings, bombs, rows, columns))
-    but.place(x=70, y=90)
-    mine.place(x=75, y=5)
-    mine_lab.place(x=5, y=5)
-    rows.place(x=75, y=30)
-    rows_lab.place(x=5, y=30)
-    columns.place(x=75, y=55)
-    columns_lab.place(x=5, y=55)
-    settings.mainloop()
-
-
-if __name__ == "__main__": main()
+if __name__ == "__main__": start()
