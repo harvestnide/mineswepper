@@ -11,10 +11,10 @@ btn = []
 
 class Cell(object):
     def __init__(self, tk, x, y):
-        self.x = x;
+        self.x = x
         self.y = y
         self.mine = False
-        self.value = -1
+        self.value = 0
         self.window = tk
         self.text = StringVar()
         self.text.set("")
@@ -36,11 +36,9 @@ class Cell(object):
 
     def reveal(self):
         self.state = 1
-        self.value = get_value(self.x, self.y)
         if self.mine:
             self.text.set("M")
             return
-        self.button.config(highlightthickness=0, bg=None)
         if self.value == 0:
             for dx in range(self.x - 1, self.x + 2):
                 for dy in range(self.y - 1, self.y + 2):
@@ -49,20 +47,6 @@ class Cell(object):
                             btn[dy][dx].reveal()
         else:
             self.text.set(str(self.value))
-
-
-def get_value(x, y):
-    global btn
-    if btn[x][y].value == -1:
-        value = 0
-        for dx in range(x - 1, x + 2):
-            for dy in range(y - 1, y + 2):
-                if 0 <= dx < rows and 0 <= dy < columns and btn[dx][dy].mine:
-                    value += 1
-        btn[x][y].value = value
-        return value
-    else:
-        return btn[x][y].value
 
 
 def start(settings, bombs_str, rows_str, columns_str):
@@ -93,6 +77,11 @@ def start(settings, bombs_str, rows_str, columns_str):
             i -= 1
         else:
             btn[x][y].mine = True
+            for dx in range(dx - 1, dx + 2):
+                if -1 < dx < rows:
+                    for dy in range(dy - 1, dy + 2):
+                        if -1 < dy < columns:
+                            btn[dx][dy].value += 1
     root.mainloop()
 
 
