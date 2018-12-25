@@ -39,6 +39,7 @@ class Cell(object):
         self.value = get_value(self.x, self.y)
         if self.mine:
             self.text.set("M")
+            return
         self.button.config(highlightthickness=0, bg=None)
         if self.value == 0:
             for dx in range(self.x - 1, self.x + 2):
