@@ -40,7 +40,7 @@ class Cell(object):
         if self.value == 0:
             for dx in range(self.x - 1, self.x + 2):
                 for dy in range(self.y - 1, self.y + 2):
-                    if 0 < dx < rows and 0 < dy < columns and not (dx == self.x and dy == self.y):
+                    if 0 <= dx < rows and 0 <= dy < columns and not (dx == self.x and dy == self.y):
                         btn[dx][dy].reveal()
         else:
             self.text.set(str(self.value))
@@ -51,7 +51,7 @@ def get_value(x, y):
     value = 0
     for dx in range(x - 1, x + 2):
         for dy in range(y - 1, y + 2):
-            if 0 < dx < rows and 0 < dy < columns and btn[dx][dy].mine:
+            if 0 <= dx < rows and 0 <= dy < columns and btn[dx][dy].mine:
                 value += 1
     return value
 
