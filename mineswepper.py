@@ -18,6 +18,7 @@ class Cell(object):
         self.window = tk
         self.text = StringVar()
         self.text.set("")
+        if self.mine: self.text.set("M")
         self.button = Button(tk, textvariable=self.text, bg='white', fg='red', padx="10", pady="7")
         self.state = 0  # 0 - закрыта, 1 - открыта, 2 - флаг, 3 - ?
         self.button.bind('<Button-1>', lambda event, state=1: self.set_state(event, state))
